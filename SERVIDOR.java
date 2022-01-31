@@ -1,25 +1,23 @@
-import java.io.OutputStream;  import java.net.InetAddress;  import java.net.Socket;
-import java.util.Random;
+import java.io.InputStream;   import java.net.ServerSocket;   import java.net.Socket;
 
-public class TCPClient {
-
+public class TCPServer {
   public static final void main(final String[] args) {
-    Socket        client;
-    OutputStream  os;
-    InetAddress   ia;
+    ServerSocket server;           InputStream  is;
+    Socket       client;          
 
     try {
-      ia = InetAddress.getByName("localhost");//get local host address
+      server = new ServerSocket(9999);//(*@\serverBox{1 + 2)}@*)
       
-      client = new Socket(ia, 9999); //create socket (*@\clientBox{1+2)}@*)
-      
-      Random rand = new Random();
-      int random_number = rand.nextInt((10-1)+1)+1;
-
-      os = client.getOutputStream(); //get stream to write to
-      os.write(random_number);  //escribe un int del 1 al 10 (*@\clientBox{3)}@*)
-      
-      client.close(); //close (*@\clientBox{4)}@*)
+      for (int j = 5; (--j) >= 0;) {  //process only 5 clients, so I can show (*@\serverBox{5)}@*) below
+        client = server.accept(); //wait for incoming connection (*@\serverBox{3)}@*)
+        System.out.println("New connection from " + client.getRemoteSocketAddress());
+        
+        is     = client.getInputStream(); //get stream to read from
+        System.out.println("X".repeat(is.read()));//(*@\serverBox{4} + \clientBox{3})@*)
+             
+        client.close(); //close connection to client
+      }
+      server.close();   //(*@\serverBox{5)}@*)
     } catch (Throwable t) {
       t.printStackTrace();
     }
